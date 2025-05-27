@@ -10,27 +10,22 @@ class ArxivFetcher:
         self.max_results = max_results
         self.client = arxiv.Client()
     
-    def fetch_papers(self, topic, days_back=7):
-        """
-        Fetch papers from arXiv for a given topic within the last N days
-        """
+    def fetch_papers(self, keywords, days_back=7):
         try:
-            # Calculate the date N days ago
             date_threshold = datetime.now() - timedelta(days=days_back)
+            search_query = ' OR '.join(f'"{keyword}"' for keyword in keywords)
+            logger.info(f"Searching with query: {search_query}")
             
-            # Construct the search query
             search = arxiv.Search(
-                query=f"cat:{topic}",
+                query=search_query,
                 max_results=self.max_results,
                 sort_by=arxiv.SortCriterion.SubmittedDate
             )
             
             papers = []
             for result in self.client.results(search):
-                # Convert arXiv date to datetime
                 published_date = result.published.replace(tzinfo=None)
                 
-                # Skip papers older than our threshold
                 if published_date < date_threshold:
                     continue
                 
@@ -41,13 +36,13 @@ class ArxivFetcher:
                     'abstract': result.summary,
                     'published_date': published_date,
                     'pdf_url': result.pdf_url,
-                    'topics': [topic]
+                    'keywords': keywords
                 }
                 papers.append(paper_data)
             
-            logger.info(f"Found {len(papers)} new papers for topic: {topic}")
+            logger.info(f"Found {len(papers)} new papers for keywords: {keywords}")
             return papers
             
         except Exception as e:
-            logger.error(f"Error fetching papers for topic {topic}: {str(e)}")
+            logger.error(f"Error fetching papers for keywords {keywords}: {str(e)}")
             return [] 
