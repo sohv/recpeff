@@ -1,4 +1,4 @@
-# RecPEff - fetch Recent Papers Effectively
+# RecPEff - fetch RECent Papers EFFectively
 
 A tool that tracks and stores the latest academic papers from arXiv based on user-defined topics.
 
