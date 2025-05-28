@@ -18,8 +18,7 @@ class Keyword(Base):
     papers = relationship('Paper', secondary=paper_keyword, back_populates='keywords')
 
 class Paper(Base):
-    __tablename__ = 'papers'
-    
+    __tablename__ = 'papers' 
     arxiv_id = Column(String, primary_key=True)
     title = Column(String, nullable=False)
     authors = Column(String)
@@ -30,7 +29,7 @@ class Paper(Base):
     keywords = relationship('Keyword', secondary=paper_keyword, back_populates='papers')
 
 class Database:
-    def __init__(self, db_url='sqlite:///papers.db'):
+    def __init__(self, db_url='sqlite:///paper.db'):
         self.engine = create_engine(db_url)
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)

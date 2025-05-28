@@ -5,7 +5,10 @@ import argparse
 from database import Database
 from arxiv_fetcher import ArxivFetcher
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 class PaperTracker:
@@ -15,22 +18,41 @@ class PaperTracker:
         self.fetcher = ArxivFetcher()
     
     def update_papers(self):
+        """
+        Fetch and store new papers for all keywords
+        """
         logger.info("Starting paper update...")
+        total_papers = 0
         for keyword in self.keywords:
+            logger.info(f"Fetching papers for keyword: {keyword}")
             papers = self.fetcher.fetch_papers([keyword])
+            logger.info(f"Found {len(papers)} papers for keyword: {keyword}")
+            
+            added_count = 0
             for paper in papers:
                 if self.db.add_paper(**paper):
+                    added_count += 1
                     logger.info(f"Added new paper: {paper['title']}")
+                else:
+                    logger.debug(f"Paper already exists: {paper['title']}")
+            
+            total_papers += added_count
+            logger.info(f"Added {added_count} new papers for keyword: {keyword}")
         
-        logger.info("Paper update completed")
+        logger.info(f"Paper update completed. Total new papers added: {total_papers}")
     
     def run_scheduled_updates(self, interval_hours=24):
+        """
+        Run updates at regular intervals
+        """
         schedule.every(interval_hours).hours.do(self.update_papers)
+        
+        # Run initial update
         self.update_papers()
         
         while True:
             schedule.run_pending()
-            time.sleep(60)
+            time.sleep(60)  # Check every minute
     
     def close(self):
         self.db.close()

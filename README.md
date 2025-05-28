@@ -36,7 +36,7 @@ You can modify the topics in `main.py` by changing the list passed to the `Paper
 
 ## Database
 
-The system uses SQLite by default, storing the database in `papers.db`. The database schema includes:
+The system uses SQLite by default, storing the database in `paper.db`. The database schema includes:
 - Papers table: stores paper metadata
 - Topics table: stores topic categories
 - Paper-Topic association table: manages many-to-many relationships
