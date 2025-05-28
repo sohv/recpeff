@@ -18,9 +18,6 @@ class PaperTracker:
         self.fetcher = ArxivFetcher()
     
     def update_papers(self):
-        """
-        Fetch and store new papers for all keywords
-        """
         logger.info("Starting paper update...")
         total_papers = 0
         for keyword in self.keywords:
@@ -42,17 +39,13 @@ class PaperTracker:
         logger.info(f"Paper update completed. Total new papers added: {total_papers}")
     
     def run_scheduled_updates(self, interval_hours=24):
-        """
-        Run updates at regular intervals
-        """
         schedule.every(interval_hours).hours.do(self.update_papers)
         
-        # Run initial update
         self.update_papers()
         
         while True:
             schedule.run_pending()
-            time.sleep(60)  # Check every minute
+            time.sleep(60)
     
     def close(self):
         self.db.close()
