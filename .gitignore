@@ -2,3 +2,4 @@ venv/
 env/
 paper.db
 papers_modified.sqbpro
+__pycache__/
